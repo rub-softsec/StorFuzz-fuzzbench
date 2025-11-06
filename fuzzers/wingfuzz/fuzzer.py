@@ -16,8 +16,7 @@
 import os
 
 from fuzzers import utils
-from fuzzers.libfuzzer import fuzzer as libfuzzer_fuzzer
-
+from fuzzers.wingfuzz_24_libfuzzer_24_switch.fuzzer import _start_fuzzer
 
 def build():
     """Build benchmark."""
@@ -42,11 +41,12 @@ def build():
 
 def fuzz(input_corpus, output_corpus, target_binary):
     """Run fuzzer."""
-    libfuzzer_fuzzer.run_fuzzer(input_corpus,
+    _start_fuzzer(input_corpus,
                                 output_corpus,
+                                target_binary,
                                 target_binary,
                                 extra_flags=[
                                     '-fork=0', '-keep_seed=1',
                                     '-jobs=2147483647', '-workers=1',
                                     '-reload=0'
-                                ])
+                                ]).wait()

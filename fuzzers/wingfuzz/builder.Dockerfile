@@ -13,9 +13,16 @@
 # limitations under the License.
 
 ARG parent_image
+FROM gcr.io/oss-fuzz-base/base-builder@sha256:87ca1e9e19235e731fac8de8d1892ebe8d55caf18e7aa131346fc582a2034fdd AS fuzzer_builder
+
+# Build wingfuzz
+RUN git clone https://github.com/WingTecherTHU/wingfuzz /wingfuzz
+RUN cd /wingfuzz && git checkout 6ef3281f145fa1839df0f46c38b348ec9d93b0e2 && \
+    ./build.sh && cd instrument && ./build.sh && clang -c WeakSym.c
+
 FROM $parent_image
 
-RUN git clone https://github.com/WingTecherTHU/wingfuzz
-RUN cd wingfuzz && git checkout 6ef3281f145fa1839df0f46c38b348ec9d93b0e2 && \
-    ./build.sh && cd instrument && ./build.sh && clang -c WeakSym.c && \
-    cp ../libFuzzer.a /libWingfuzz.a && cp WeakSym.o / && cp LoadCmpTracer.so /
+COPY --from=fuzzer_builder /wingfuzz /wingfuzz
+RUN cp /wingfuzz/libFuzzer.a /libWingfuzz.a && \
+    cp /wingfuzz/instrument/WeakSym.o / && \
+    cp /wingfuzz/instrument/LoadCmpTracer.so /
