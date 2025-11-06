@@ -14,6 +14,7 @@
 #
 """Integration code for AFLplusplus fuzzer."""
 
+import json
 import os
 import shutil
 
@@ -29,6 +30,31 @@ def get_cmplog_build_directory(target_directory):
 def get_uninstrumented_build_directory(target_directory):
     """Return path to CmpLog target directory."""
     return os.path.join(target_directory, 'uninstrumented')
+
+
+def get_stats(output_corpus, fuzzer_log):  # pylint: disable=unused-argument
+    """Gets fuzzer stats for AFL."""
+    # Get a dictionary containing the stats AFL reports.
+    stats_file = os.path.join(output_corpus, 'default', 'fuzzer_stats')
+    if not os.path.exists(stats_file):
+        print('Can\'t find fuzzer_stats')
+        return '{}'
+    with open(stats_file, encoding='utf-8') as file_handle:
+        stats_file_lines = file_handle.read().splitlines()
+    stats_file_dict = {}
+    for stats_line in stats_file_lines:
+        key, value = stats_line.split(': ')
+        stats_file_dict[key.strip()] = value.strip()
+
+    # Report to FuzzBench the stats it accepts.
+    stats = {
+        'exec_sec': float(stats_file_dict['execs_per_sec']),
+        'executions': int(stats_file_dict['execs_done']),
+        'corpus_count': int(stats_file_dict['corpus_count']),
+        'crashes': int(stats_file_dict['saved_crashes']),
+        'aflplusplus-raw': stats_file_dict
+        }
+    return json.dumps(stats)
 
 
 def build(*args):  # pylint: disable=too-many-branches,too-many-statements
