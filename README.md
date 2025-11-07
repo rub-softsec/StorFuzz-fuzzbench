@@ -1,3 +1,13 @@
+# StorFuzz
+
+This repository contains the FuzzBench source code including all fuzzer configurations used for the ICSE 2026 paper "StorFuzz: Using Data Diversity to Overcome Fuzzing Plateaus". It is based on FuzzBench revision ([2a2ca6a](https://github.com/google/fuzzbench/commit/2a2ca6ae4c5d171a52b3e20d9b7a72da306fe5b8)).
+
+The complete artifacts can be found at [rub-SoftSec/StorFuzz](https://github.com/rub-SoftSec/StorFuzz).
+
+The original README can be found below.
+
+---
+
 # FuzzBench: Fuzzer Benchmarking As a Service
 
 FuzzBench is a free service that evaluates fuzzers on a wide variety of
